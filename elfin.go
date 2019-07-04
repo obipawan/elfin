@@ -62,8 +62,13 @@ func chain(
 	h http.Handler,
 	middlewares ...func(http.Handler) http.Handler,
 ) http.Handler {
-	for _, m := range middlewares {
-		h = m(h)
+	if len(middlewares) < 1 {
+		return h
 	}
-	return h
+	wrapped := h
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		wrapped = middlewares[i](wrapped)
+	}
+
+	return wrapped
 }
