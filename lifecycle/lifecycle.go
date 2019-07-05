@@ -4,17 +4,17 @@ package elfin
 Lifecycle .
 */
 type Lifecycle struct {
-	onPreStartFuncs,
-	onPostStartFuncs,
-	onShutdownFuncs,
-	onReloadFuncs []Func
+	OnPreStartFuncs,
+	OnPostStartFuncs,
+	OnShutdownFuncs,
+	OnReloadFuncs []Func
 }
 
 /*
 OnPreStart registers callbacks for server pre-start hook
 */
 func (lifecycle *Lifecycle) OnPreStart(funcs ...Func) *Lifecycle {
-	lifecycle.onPreStartFuncs = funcs
+	lifecycle.OnPreStartFuncs = funcs
 	return lifecycle
 }
 
@@ -22,7 +22,7 @@ func (lifecycle *Lifecycle) OnPreStart(funcs ...Func) *Lifecycle {
 OnPostStart registers callbacks for server post-start hook
 */
 func (lifecycle *Lifecycle) OnPostStart(funcs ...Func) *Lifecycle {
-	lifecycle.onPostStartFuncs = funcs
+	lifecycle.OnPostStartFuncs = funcs
 	return lifecycle
 }
 
@@ -30,7 +30,7 @@ func (lifecycle *Lifecycle) OnPostStart(funcs ...Func) *Lifecycle {
 OnShutdown registers callbacks for server shutdown hook
 */
 func (lifecycle *Lifecycle) OnShutdown(funcs ...Func) *Lifecycle {
-	lifecycle.onShutdownFuncs = funcs
+	lifecycle.OnShutdownFuncs = funcs
 	return lifecycle
 }
 
@@ -38,6 +38,6 @@ func (lifecycle *Lifecycle) OnShutdown(funcs ...Func) *Lifecycle {
 OnReload registers callbacks for server reloads
 */
 func (lifecycle *Lifecycle) OnReload(funcs ...Func) *Lifecycle {
-	lifecycle.onReloadFuncs = funcs
+	lifecycle.OnReloadFuncs = funcs
 	return lifecycle
 }

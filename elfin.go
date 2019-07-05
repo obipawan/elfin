@@ -1,8 +1,11 @@
 package elfin
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"syscall"
+	"time"
 
 	elfin "github.com/obipawan/elfin/lifecycle"
 )
@@ -35,21 +38,6 @@ func (elfin *Elfin) ReloadOptions(options *elfin.ReloadOptions) {
 }
 
 /*
-Start starts the server
-*/
-func (elfin *Elfin) Start() {
-	port := os.Getenv("PORT")
-	if len(port) == 0 {
-		port = "3000"
-	}
-
-	http.ListenAndServe(
-		os.Getenv("HOST")+":"+port,
-		chain(elfin.Mux, elfin.middlewares...),
-	)
-}
-
-/*
 Use appends a middleware. Middlewares are invoked in the order they're appended
 */
 func (elfin *Elfin) Use(handler func(http.Handler) http.Handler) *Elfin {
@@ -71,4 +59,37 @@ func chain(
 	}
 
 	return wrapped
+}
+
+/*
+Start starts the server
+*/
+func (elfin *Elfin) Start() {
+	elfin.handleStart()
+}
+
+func (elfin *Elfin) handleStart() {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "3000"
+	}
+
+	server := &http.Server{
+		Addr:    os.Getenv("HOST") + ":" + port,
+		Handler: chain(elfin.Mux, elfin.middlewares...),
+	}
+
+	elfin.OnShutdownFuncs = append(
+		elfin.OnShutdownFuncs,
+		func(interface{}) (error, []interface{}) {
+			cx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			return server.Shutdown(cx), nil
+		},
+	)
+	go NewGracefulStop().
+		Notify(syscall.SIGTERM, syscall.SIGINT).
+		Laters(elfin.OnShutdownFuncs...)
+
+	server.ListenAndServe()
 }
