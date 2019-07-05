@@ -16,24 +16,30 @@ type Reload struct {
 /*
 CanReload checks if the server can reload, or panics based on the ReloadOption
 */
-func (reload *Reload) CanReload(err error, options ReloadOptions) bool {
-	if *options.OnPreStartError == ShouldPanic ||
-		*options.OnStartError == ShouldPanic {
+func (reload *Reload) CanReload(err error, option int) bool {
+	if option == ShouldPanic {
 		panic(err)
 	}
 	return reload.reloadCount < MaxReload
 }
 
 /*
-SetOptions sets the reload options
+BumpReloadCount increments the reload count
 */
-func (reload *Reload) SetOptions(options *ReloadOptions) {
+func (reload *Reload) BumpReloadCount() {
+	reload.reloadCount++
+}
+
+/*
+SetReloadOptions sets the reload options
+*/
+func (reload *Reload) SetReloadOptions(options *ReloadOptions) {
 	reload.options = options
 }
 
 /*
-GetOptions returns the reload options
+GetReloadOptions returns the reload options
 */
-func (reload *Reload) GetOptions() *ReloadOptions {
+func (reload *Reload) GetReloadOptions() *ReloadOptions {
 	return reload.options
 }
