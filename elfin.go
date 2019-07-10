@@ -1,3 +1,28 @@
+/*
+Package elfin is a simple framework for building applications or services for
+the web.
+
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/obipawan/elfin"
+	"github.com/obipawan/elfin/middlewares"
+)
+
+func foo(w http.ResponseWriter, r *http.Request, p elfin.Params) {
+	fmt.Fprint(w, p)
+}
+
+func main() {
+	elfin := elfin.New()
+	elfin.Get("/:word", foo)
+	elfin.Use(middlewares.Log)
+	elfin.Start()
+}
+*/
 package elfin
 
 import (
@@ -12,7 +37,8 @@ import (
 )
 
 /*
-Elfin .
+Elfin describes the service or web application which can be used to subscribe to
+lifecycles, set middlewares and add http routes.
 */
 type Elfin struct {
 	elfin.Lifecycle

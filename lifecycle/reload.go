@@ -6,7 +6,8 @@ const (
 )
 
 /*
-Reload ..
+Reload describes the reload options and handles reloading the service if needed
+while booting up.
 */
 type Reload struct {
 	options     *ReloadOptions
