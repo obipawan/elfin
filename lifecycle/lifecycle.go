@@ -1,7 +1,7 @@
 package elfin
 
 /*
-Lifecycle .
+Lifecycle describes the possbile callbacks that elfin can have.
 */
 type Lifecycle struct {
 	OnPreStartFuncs,
