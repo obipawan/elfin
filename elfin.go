@@ -74,8 +74,19 @@ func (elfin *Elfin) Use(handler func(http.Handler) http.Handler) *Elfin {
 Start starts the server
 */
 func (elfin *Elfin) Start() {
+	elfin.StartWithAddr(elfin.addr)
+}
+
+/*
+StartWithAddr starts the server with the given address host:port
+*/
+func (elfin *Elfin) StartWithAddr(address string) {
+	addr := address
+	if len(addr) == 0 {
+		addr = elfin.addr
+	}
 	server := &http.Server{
-		Addr:    elfin.addr,
+		Addr:    addr,
 		Handler: middlewares.Chain(elfin.Mux, elfin.middlewares...),
 	}
 
