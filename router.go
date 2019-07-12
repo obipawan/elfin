@@ -86,3 +86,12 @@ func (router *Router) Delete(path string, handler Handle) *Router {
 	router.Mux.DELETE(path, handleProxy(handler))
 	return router
 }
+
+/*
+NotFound sets a http.Handler which is called when no matching route is
+found. If it is not set, http.NotFound is used.
+*/
+func (router *Router) NotFound(handler http.Handler) *Router {
+	router.Mux.NotFound = handler
+	return router
+}
