@@ -28,12 +28,11 @@ package elfin
 import (
 	"context"
 	"net/http"
-	"os"
 	"syscall"
 	"time"
 
 	"github.com/golang/glog"
-	elfin "github.com/obipawan/elfin/lifecycle"
+	lc "github.com/obipawan/elfin/lifecycle"
 	"github.com/obipawan/elfin/middlewares"
 )
 
@@ -42,8 +41,8 @@ Elfin describes the service or web application which can be used to subscribe to
 lifecycles, set middlewares and add http routes.
 */
 type Elfin struct {
-	elfin.Lifecycle
-	elfin.Reload
+	lc.Lifecycle
+	lc.Reload
 	Router
 	Params
 	middlewares []func(http.Handler) http.Handler
@@ -51,15 +50,27 @@ type Elfin struct {
 }
 
 /*
+ServerOpts defines options to setup the http server
+*/
+type ServerOpts struct {
+	Address string
+}
+
+/*
 New returns a new instance
 */
-func New() *Elfin {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
+func New(opts *ServerOpts) *Elfin {
+	options := opts
+	if options == nil {
+		options = &ServerOpts{Address: ":3000"}
 	}
-	elfin := &Elfin{addr: os.Getenv("HOST") + ":" + port}
+	elfin := &Elfin{addr: options.Address}
 	elfin.Mux = NewRouter().Mux
+	elfin.SetReloadOptions(
+		lc.Options().
+			SetOnPreStartError(lc.ShouldReload).
+			SetOnStartError(lc.ShouldReload),
+	)
 	return elfin
 }
 
@@ -82,11 +93,12 @@ func (elfin *Elfin) Start() {
 StartWithAddr starts the server with the given address host:port
 */
 func (elfin *Elfin) StartWithAddr(address string) {
-	if address != "" {
-		elfin.addr = address
+	addr := address
+	if len(addr) == 0 {
+		addr = elfin.addr
 	}
 	server := &http.Server{
-		Addr:    elfin.addr,
+		Addr:    addr,
 		Handler: middlewares.Chain(elfin.Mux, elfin.middlewares...),
 	}
 
@@ -115,7 +127,6 @@ func (elfin *Elfin) StartWithAddr(address string) {
 
 	elfin.handleOnPostStart()
 
-	glog.Info("Server started and listening on port ", elfin.addr)
 	if err := server.ListenAndServe(); err != nil {
 		if elfin.CanReload(err, *elfin.GetReloadOptions().OnStartError) {
 			elfin.handleOnReload(err)
@@ -123,6 +134,8 @@ func (elfin *Elfin) StartWithAddr(address string) {
 		}
 		panic(err)
 	}
+
+	glog.Info("Server started and listening on port ", elfin.addr)
 }
 
 /*
