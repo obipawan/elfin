@@ -2,14 +2,26 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
   revision = "348b672cd90d8190f8240323e372ecd1e66b59dc"
   version = "v1.2.0"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/obipawan/elfin"
+  packages = ["lifecycle","middlewares"]
+  revision = "9d2bc95a58cb819629fc4f1b95bef2e6f18a5174"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "70c5dfa50668412a1ed6282eb7e19a67056239fbedb45183729080d32a01d526"
+  inputs-digest = "a6f78b02304bcf9ac027002bea87ef3cd186d7b081ff74f462ef332a50447472"
   solver-name = "gps-cdcl"
   solver-version = 1

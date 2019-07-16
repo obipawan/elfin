@@ -32,6 +32,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/golang/glog"
 	elfin "github.com/obipawan/elfin/lifecycle"
 	"github.com/obipawan/elfin/middlewares"
 )
@@ -54,7 +55,7 @@ New returns a new instance
 */
 func New() *Elfin {
 	port := os.Getenv("PORT")
-	if len(port) == 0 {
+	if port == "" {
 		port = "3000"
 	}
 	elfin := &Elfin{addr: os.Getenv("HOST") + ":" + port}
@@ -81,12 +82,11 @@ func (elfin *Elfin) Start() {
 StartWithAddr starts the server with the given address host:port
 */
 func (elfin *Elfin) StartWithAddr(address string) {
-	addr := address
-	if len(addr) == 0 {
-		addr = elfin.addr
+	if address != "" {
+		elfin.addr = address
 	}
 	server := &http.Server{
-		Addr:    addr,
+		Addr:    elfin.addr,
 		Handler: middlewares.Chain(elfin.Mux, elfin.middlewares...),
 	}
 
@@ -107,11 +107,15 @@ func (elfin *Elfin) StartWithAddr(address string) {
 		},
 	)
 	go NewGracefulStop().
-		Notify(syscall.SIGTERM, syscall.SIGINT).
+		Notify(syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT).
 		Laters(elfin.OnShutdownFuncs...)
 
 	elfin.handleOnPostStart()
 
+	glog.Info("Server started and listening on port ", elfin.addr)
 	if err := server.ListenAndServe(); err != nil {
 		if elfin.CanReload(err, *elfin.GetReloadOptions().OnStartError) {
 			elfin.handleOnReload(err)
