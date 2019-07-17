@@ -13,15 +13,9 @@
   revision = "348b672cd90d8190f8240323e372ecd1e66b59dc"
   version = "v1.2.0"
 
-[[projects]]
-  branch = "master"
-  name = "github.com/obipawan/elfin"
-  packages = ["lifecycle","middlewares"]
-  revision = "9d2bc95a58cb819629fc4f1b95bef2e6f18a5174"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "afb5b4e10f15f81de26d5531a222edc1bf9a361b4e053e598be1220542501329"
+  inputs-digest = "24b0eb65070b42c6da4a39051d57ef6fde2f11d0a8c4aa39baa27f30816f9c01"
   solver-name = "gps-cdcl"
   solver-version = 1
