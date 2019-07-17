@@ -31,7 +31,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/golang/glog"
 	lc "github.com/obipawan/elfin/lifecycle"
 	"github.com/obipawan/elfin/middlewares"
 )
@@ -134,8 +133,6 @@ func (elfin *Elfin) StartWithAddr(address string) {
 		}
 		panic(err)
 	}
-
-	glog.Info("Server started and listening on port ", elfin.addr)
 }
 
 /*
