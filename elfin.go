@@ -111,10 +111,10 @@ func (elfin *Elfin) StartWithAddr(address string) {
 
 	elfin.OnShutdownFuncs = append(
 		elfin.OnShutdownFuncs,
-		func(interface{}) (error, []interface{}) {
+		func(interface{}) ([]interface{}, error) {
 			cx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			return server.Shutdown(cx), nil
+			return nil, server.Shutdown(cx)
 		},
 	)
 	go NewGracefulStop().
@@ -140,7 +140,7 @@ handleOnPrestart takes care of invoking registered pre-start callbacks
 */
 func (elfin *Elfin) handleOnPreStart() error {
 	for _, fun := range elfin.OnPreStartFuncs {
-		if err, _ := fun(elfin.Mux); err != nil {
+		if _, err := fun(elfin.Mux); err != nil {
 			return err
 		}
 	}
